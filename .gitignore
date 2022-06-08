@@ -4,3 +4,5 @@ __pycache__/
 .serverless
 .env
 unzip_requirements.py
+.devcontainer/devcontainer.json
+.devcontainer/docker-compose.yml
