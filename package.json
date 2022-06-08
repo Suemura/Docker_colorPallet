@@ -1,0 +1,14 @@
+{
+  "dependencies": {
+    "serverless": "^3.18.2"
+  },
+  "scripts": {
+    "deploy": "serverless deploy --verbose"
+  },
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "@serverless/compose": "^1.2.0",
+    "serverless-prune-plugin": "^2.0.1",
+    "serverless-python-requirements": "^5.4.0"
+  }
+}

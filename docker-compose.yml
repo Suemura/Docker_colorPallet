@@ -1,0 +1,14 @@
+version: "3.8"
+services:
+  app:
+    build: ./
+    stdin_open: true
+    tty: true
+    environment:
+      - PYTHONPATH=./
+    volumes:
+      - .:/app
+    shm_size: "7gb"
+    env_file:
+      - .env
+    command: /bin/sh -c "while sleep 1000; do :; done"
