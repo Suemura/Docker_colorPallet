@@ -1,0 +1,6 @@
+.DS_Store
+__pycache__/
+.requirements.zip
+.serverless
+.env
+unzip_requirements.py
