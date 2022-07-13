@@ -6,3 +6,4 @@ __pycache__/
 unzip_requirements.py
 .devcontainer/devcontainer.json
 .devcontainer/docker-compose.yml
+node_modules
