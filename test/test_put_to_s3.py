@@ -1,0 +1,7 @@
+import requests
+
+backet_url ="https://kmeaned-image-dev.s3.amazonaws.com/4230a4a9-a691-4e43-b1c0-49833d47106e?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=ASIAYOFZ3ETRCT6WRXG7%2F20220704%2Fap-northeast-1%2Fs3%2Faws4_request&X-Amz-Date=20220704T093453Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEGEaDmFwLW5vcnRoZWFzdC0xIkcwRQIgWli3Q9y3fzLdrNL5vou7gdxPDUGhtElau33FsI0ue6ECIQCXFNx1wtjNCIm0gvXuXfrZ1S2ZDPnYRBlGv%2Bh1LDS6airAAgiL%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F8BEAEaDDU4MDIxMDMzNjk5NCIMIn0ZeBKpj3i8S%2BukKpQC2suo6b0awWt4I%2BEgBQLJmCBw%2BOmwN8kEf3l1wnWNaFr%2F4BCf2gKBq8SBHdOVum86ELvN6gmwbh7KGgfr6EurMYfZrcYPQEbq9%2B%2FQFN6oC6wuHD9ZHI9vdoqHzKZwRb0VB2%2FawlBrDVQBbhQrCJkBw6ZNugLZxmWYPElAZSaN3whKbZXyioYJ5jt%2FVSe3EZfI6%2BBUePxv0ixLLLtQZUDiWrgw56rzs9BzhqPIcNKikMzSjvi9sUc98bMc894l2tfQ8A3VJGJJPd%2BwvNRuU%2FzJqB0zuvXOPwfWbaBCZOvBFuobT85KdpJWo%2FSdIAQukpyPYp8vb8efM2ubnYWPSXefFnv2qoo6M2syIxLehDWVCh12efUrMPTnipYGOpoBhFj3u5RqW3bZ%2BNUBc1xt75w8J87%2FIARmYINPWzFfMDKz9tjyySFCnAZVxSZuUqA7e6PYAVVRQyIc%2BxP48ouWe8vbak0n920QbqLyjp3hDb88s%2FocNODK6Mbh11puSMnpEbjBcvblmUdaZqMMSJhZF9PBTo0OT5pAqM0bbNy9iJrzIGuT8OBnjvppbQ2kBicLDawXnqM4SHnGRA%3D%3D&X-Amz-Signature=2a9c5e7cc8499d14330a70519dcfb088d65b79b641957d9efd2ac0659bf82e7d"
+image_path = "./test/image.jpg"
+
+with open(image_path, mode='rb') as f:
+    upload_result = requests.put(backet_url, f, headers={'Content-Type': 'images/*'})
