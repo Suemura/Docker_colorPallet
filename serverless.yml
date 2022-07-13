@@ -1,0 +1,116 @@
+service: kmeans-color-extractor
+
+provider:
+  name: aws
+  runtime: python3.8
+  stage: dev
+  region: ap-northeast-1
+  timeout: 30
+  environment:
+    USER_TABLE: kmeans-user-${self:custom.myStage}
+    KMEANED_IMAGE_BUCKET: kmeaned-image-${self:custom.myStage}
+    KMEANS_REQUEST_QUEUE: kmeans-request-${self:custom.myStage}
+    KMEANS_RESPONSE_QUEUE: kmeans-response-${self:custom.myStage}
+    REGION_NAME: ${self:provider.region}
+    STAGE: ${self:custom.myStage}
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:DescribeTable
+            - dynamodb:Query
+            - dynamodb:Scan
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:UpdateItem
+            - dynamodb:DeleteItem
+          Resource: "arn:aws:dynamodb:${self:provider.region}:*:table/*"
+        - Effect: Allow
+          Action:
+            - "s3:getObject"
+            - "s3:putObject"
+          Resource: "arn:aws:s3:::${self:provider.environment.KMEANED_IMAGE_BUCKET}/*"
+        - Effect: "Allow"
+          Action:
+            - "sqs:SendMessage"
+            - "sqs:GetQueueUrl"
+          Resource: "arn:aws:sqs:${self:provider.region}:*:*"
+  apiGateway:
+    resourcePolicy:
+      - Effect: Allow
+        Principal: "*"
+        Action: execute-api:Invoke
+        Resource:
+          - execute-api:/*/*/create_s3_presigned_url
+
+plugins:
+  - serverless-python-requirements
+
+custom:
+  myStage: ${opt:stage, self:provider.stage}
+  pythonRequirements:
+    dockerizePip: non-linux
+    zip: true
+    slim: true
+    strip: false
+    useDownloadCache: true
+    useStaticCache: true
+  prune:
+    automatic: true
+    number: 3
+
+functions:
+  create_s3_presigned_url:
+    handler: src/functions/create_s3_presigned_url.main
+    events:
+      - http:
+          method: post
+          path: create_s3_presigned_url
+          cors: true
+  kmeans:
+    handler: src/functions/color_kmean.main
+    events:
+      - s3:
+          bucket: ${self:provider.environment.KMEANED_IMAGE_BUCKET}
+          event: s3:ObjectCreated:*
+          existing: true
+
+resources:
+  Resources:
+    UserTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        TableName: ${self:provider.environment.USER_TABLE}
+        BillingMode: PAY_PER_REQUEST
+    ImageBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:provider.environment.KMEANED_IMAGE_BUCKET}
+        VersioningConfiguration:
+          Status: Enabled
+        BucketEncryption:
+          ServerSideEncryptionConfiguration:
+            - ServerSideEncryptionByDefault:
+                SSEAlgorithm: AES256
+        AccessControl: Private
+        PublicAccessBlockConfiguration:
+          BlockPublicAcls: True
+          BlockPublicPolicy: True
+          IgnorePublicAcls: True
+          RestrictPublicBuckets: True
+    KmeansRequestQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: ${self:provider.environment.KMEANS_REQUEST_QUEUE}
+    KmeansResponseQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: ${self:provider.environment.KMEANS_RESPONSE_QUEUE}
+
